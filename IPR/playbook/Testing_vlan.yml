@@ -1,0 +1,50 @@
+---
+- name: Check and Configure VLANs on Arista switch
+  hosts: switches
+  gather_facts: false
+  become: yes
+  tasks:
+
+    - name: Gather VLAN information
+      arista.eos.eos_command:
+        commands: "show vlan"
+      register: vlan_output
+
+    - name: Display VLAN information
+      debug:
+        msg: "{{ vlan_output.stdout_lines }}"
+
+    - name: Check for VLAN 100 and configure if it does not exist
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 100
+            name: Data_VLAN
+        state: merged
+      when: "'100' not in vlan_output.stdout[0]"
+      notify:
+        - vlan_configured_message
+
+    - name: Check for VLAN 200 and configure if it does not exist
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 200
+            name: Voice_VLAN
+        state: merged
+      when: "'200' not in vlan_output.stdout[0]"
+      notify:
+        - vlan_configured_message
+
+    - name: Check for VLAN 300 and configure if it does not exist
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 300
+            name: Guest_VLAN
+        state: merged
+      when: "'300' not in vlan_output.stdout[0]"
+      notify:
+        - vlan_configured_message
+
+  handlers:
+    - name: vlan_configured_message
+      debug:
+        msg: "VLAN has been configured successfully."

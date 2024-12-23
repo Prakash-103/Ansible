@@ -1,0 +1,17 @@
+---
+- name: Print all gathered facts
+  hosts: switches
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Gather interface facts
+      arista.eos.eos_facts:
+        gather_subset: interfaces
+      register: interface_facts
+
+    - name: Print interface facts
+      debug:
+        var: interface_facts
+        msg: "{{ interface_facts.ansible_facts.all[' Ethernet4 '] }}"
+      when: "'Ethernet4' in interface_facts.ansible_facts.interfaces"
+      

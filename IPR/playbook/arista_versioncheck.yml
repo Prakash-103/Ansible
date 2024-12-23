@@ -1,0 +1,22 @@
+---
+- name: check version
+  hosts: switches
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: run show version on remote devices
+      arista.eos.eos_command:
+        commands: 
+          - command: show version
+            output: json
+      register: show_version
+            
+    - name: show output
+      debug:
+        msg: 'Switch version: {{show_version.stdout}}' 
+      when: " ' 4.27.12M ' not in show_version.stdout_lines "
+ 
+
+ 
+    

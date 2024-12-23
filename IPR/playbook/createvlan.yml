@@ -1,0 +1,30 @@
+
+---
+- name: Configure VLANs on Arista switch
+  hosts: switches
+  gather_facts: false
+  become: yes
+  tasks:
+
+    - name: Checking VLAN 100
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 100
+            name: Data_VLAN
+        state: merged
+        when: vlan_id not has 100
+    
+    - name: Configure VLAN 200
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 200
+            name: Voice_VLAN
+        state: merged
+
+    - name: Configure VLAN 300
+      arista.eos.eos_vlans:
+        config:
+          - vlan_id: 300
+            name: Guest_VLAN
+        state: merged
+
