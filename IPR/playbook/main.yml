@@ -1,0 +1,5 @@
+---
+# main.yml
+- import_playbook: vlan_items.yml
+- import_playbook: loop_vlan.yml
+- import_playbook: arista_ospf.yml

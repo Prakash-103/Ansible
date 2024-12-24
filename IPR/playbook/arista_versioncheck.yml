@@ -4,6 +4,14 @@
   gather_facts: no
   become: yes
 
+  vars_prompt:
+    - name: ansible_user
+      prompt: "Enter the username"
+      private: no
+    - name: ansible_password
+      prompt: "Enter the password"
+      private: yes
+
   tasks:
     - name: run show version on remote devices
       arista.eos.eos_command:
@@ -14,8 +22,9 @@
             
     - name: show output
       debug:
-        msg: 'Switch version: {{show_version.stdout}}' 
-      when: " ' 4.27.12M ' not in show_version.stdout_lines "
+        msg: 'Switch version: {{ show_version.stdout }}' 
+      when: "'4.27.12M' not in show_version.stdout_lines"
+
  
 
  

@@ -1,0 +1,6 @@
+  vars:
+    vlan_items:
+    - {vlan_id: 100 , name: 'Data_vlan'}
+    - {vlan_id: 200 , name: 'voice_vlan'}
+    - {vlan_id: 300 , name: 'Guest_vlan'}
+    - {vlan_id: 400 , name: 'support_vlan'}

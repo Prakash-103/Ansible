@@ -3,31 +3,13 @@
   hosts: switches
   gather_facts: false
   become: yes
-  vars:
-    vlan_items:
-    - {vlan_id: 100 , name: 'Data_vlan'}
-    - {vlan_id: 200 , name: 'voice_vlan'}
-    - {vlan_id: 300 , name: 'Guest_vlan'}
-    - {vlan_id: 400 , name: 'support_vlan'}
+  roles: 
+    - vlan
 
-  tasks:
-    - name: Gather VLAN information
-      arista.eos.eos_command:
-        commands: "show vlan"
-        output: text
-      register: vlan_output
 
-    - name: Display VLAN information
-      debug:
-        msg: "{{ vlan_output.stdout_lines[0] }}"
 
-    - name: creating Vlan
-      arista.eos.eos_vlans:
-        config:
-          - vlan_id: '{{ item.vlan_id }}'
-            name: '{{ item.name }}'
-        state: merged
-      loop: '{{ vlan_items }}'
-      when: " ' {{ item.vlan_id }}' not in vlan_output.stdout[0]"
+
+
+
 
     

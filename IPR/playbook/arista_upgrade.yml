@@ -1,0 +1,33 @@
+- name: Check version and backup running configuration
+  hosts: switches
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Get switch version
+      arista.eos.eos_command:
+        commands:
+          - show version
+      register: version_output
+
+    - name: Display version output
+      debug:
+        var: version_output.stdout_lines
+
+    - name: Get running configuration
+      arista.eos.eos_command:
+        commands:
+          - show running-config
+      register: running_config_output
+
+    - name: Save running configuration to file
+      copy:
+        content: "{{ running_config_output.stdout | join('\n') }}"
+        dest: /home/root1/Ansible/IPR/files/backups/running_config.cfg
+
+    - name: Configurable backup path
+      arista.eos.eos_config:
+        src: eos_template.j2
+        backup: true
+        backup_options:
+          filename: backup_arista.cfg
+          dir_path: /home/root1/Ansible/IPR/files/backups

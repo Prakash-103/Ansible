@@ -1,0 +1,22 @@
+---
+# tasks file for vlan    
+- name: Gather VLAN information
+  arista.eos.eos_command:
+    commands:
+      - command: show vlan
+        output: text
+  register: vlan_output
+
+- name: Display VLAN information
+  debug:
+    msg: "{{ vlan_output.stdout }}"
+
+- name: Create VLANs
+  arista.eos.eos_config:
+    lines:
+      - vlan {{ item.vlan_id }}
+      - name {{ item.name }}
+    state: merged
+  loop: "{{ vlan_items }}"
+  when: "'Vlan {{ item.vlan_id }}' not in vlan_output.stdout"
+
