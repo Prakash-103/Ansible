@@ -1,0 +1,26 @@
+{"Ethernet1": 
+{"description": null, "macaddress": "0c6f.aca6.0001", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"},
+ "Ethernet2":
+  {"description": null, "macaddress": "0c6f.aca6.0002", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"},
+  "Ethernet3": 
+  {"description": null, "macaddress": "0c6f.aca6.0003", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet4":
+   {"description": null, "macaddress": "0c6f.aca6.0004", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet5": 
+  {"description": null, "macaddress": "0c6f.aca6.0005", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet6": 
+  {"description": null, "macaddress": "0c6f.aca6.0006", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet7":
+   {"description": null, "macaddress": "0c6f.aca6.0007", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet8": 
+  {"description": null, "macaddress": "0c6f.aca6.0008", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet9":
+   {"description": null, "macaddress": "0c6f.aca6.0009", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet10": 
+  {"description": null, "macaddress": "0c6f.aca6.000a", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"}, 
+  "Ethernet11":
+   {"description": null, "macaddress": "0c6f.aca6.000b", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"},
+   "Ethernet12": 
+   {"description": null, "macaddress": "0c6f.aca6.000c", "mtu": 9214, "bandwidth": 10000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet"},
+    "Management1":
+     {"description": null, "macaddress": "0c6f.aca6.0000", "mtu": 1500, "bandwidth": 1000000, "mediatype": null, "duplex": null, "lineprotocol": "up", "operstatus": "up", "type": "Ethernet", "ipv4": [{"address": "192.168.107.234", "subnet": "24"}]}, "%": {"ipv6": []}}

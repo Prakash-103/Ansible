@@ -1,0 +1,1 @@
+["Software image version: 4.27.12M"]

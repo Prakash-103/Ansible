@@ -1,0 +1,25 @@
+---
+- name: Configure VLANs on Arista switch
+  hosts: switches
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: run show version on remote devices
+      arista.eos.eos_command:
+        commands: 
+          - command: sh version  
+            output: json
+      register: show_version1
+
+    - name: Write switch version to local file
+      copy:
+        content: "{{ show_version1.stdout }}"
+        dest: "files/switch_version.yml"
+
+    - name:  display output
+      debug:
+        msg: 'Switch version: {{ show_version1.stdout }}' 
+
+    
+

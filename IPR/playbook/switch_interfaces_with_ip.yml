@@ -1,0 +1,15 @@
+---
+- name: Gather switch interfaces and IP info
+  hosts: switches
+  gather_facts: no
+  tasks:
+    - name: Collect interface facts
+      ios_facts:
+        gather_subset:
+          - interfaces
+      register: switch_facts
+ 
+    - name: Save switch interface details to file
+      copy:
+        content: "{{ switch_facts.ansible_facts.ansible_net_interfaces }}"
+        dest: "files/switch_interfaces_with_ip.json"
