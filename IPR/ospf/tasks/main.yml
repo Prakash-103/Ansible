@@ -1,0 +1,8 @@
+---
+# tasks file for ospf
+- include_tasks: nopassive.yml
+- include_tasks: debug_ospf.yml
+- include_tasks: main_ospf.yml
+
+
+

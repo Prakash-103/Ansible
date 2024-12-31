@@ -1,0 +1,14 @@
+
+---
+
+ospf_items:
+  - process_id: 4
+    ospf_interfaces:
+      - Ethernet3
+      - Ethernet4
+      - Ethernet7
+      - Ethernet6
+  - process_id: 2
+    ospf_interfaces:
+      - Ethernet1
+      - Ethernet2

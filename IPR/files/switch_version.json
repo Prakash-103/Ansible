@@ -1,1 +1,22 @@
-[{"imageFormatVersion": "1.0", "uptime": 10543.46, "modelName": "vEOS-lab", "internalVersion": "4.27.12M-34310379.42712M", "memTotal": 2004580, "mfgName": "Arista", "serialNumber": "F958E8B44FB4DD4486ADD7B84761AF91", "systemMacAddress": "0c:6f:ac:6c:77:73", "bootupTimestamp": 1735189179.0, "memFree": 928488, "version": "4.27.12M", "configMacAddress": "00:00:00:00:00:00", "isIntlVersion": false, "imageOptimization": "None", "internalBuildId": "46cfb995-0fbe-416f-9ede-d92017ab943e", "hardwareRevision": "", "hwMacAddress": "00:00:00:00:00:00", "architecture": "x86_64"}]
+[
+    {
+        "imageFormatVersion": "1.0",
+        "uptime": 10543.46,
+        "modelName": "vEOS-lab",
+        "internalVersion": "4.27.12M-34310379.42712M",
+        "memTotal": 2004580,
+        "mfgName": "Arista",
+        "serialNumber": "F958E8B44FB4DD4486ADD7B84761AF91",
+        "systemMacAddress": "0c:6f:ac:6c:77:73",
+        "bootupTimestamp": 1735189179.0,
+        "memFree": 928488,
+        "version": "4.27.12M",
+        "configMacAddress": "00:00:00:00:00:00",
+        "isIntlVersion": false,
+        "imageOptimization": "None",
+        "internalBuildId": "46cfb995-0fbe-416f-9ede-d92017ab943e",
+        "hardwareRevision": "",
+        "hwMacAddress": "00:00:00:00:00:00",
+        "architecture": "x86_64"
+    }
+]

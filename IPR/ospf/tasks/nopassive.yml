@@ -1,0 +1,19 @@
+- name: Initialize OSPF configuration lines
+  set_fact:
+    ospf_config_lines: []
+
+- name: Build OSPF non-passive configuration
+  set_fact:
+    ospf_config_lines: >-
+      {{ ospf_config_lines + 
+         ['router ospf ' ~ item.process_id] + 
+         item.ospf_interfaces | map('regex_replace', '^', 'no passive-interface ') | list }}
+  loop: "{{ ospf_items }}"
+
+- name: Debug generated OSPF config lines
+  debug:
+    var: ospf_config_lines
+
+- name: Apply OSPF non-passive configuration
+  arista.eos.eos_config:
+    lines: "{{ ospf_config_lines }}"

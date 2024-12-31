@@ -1,0 +1,8 @@
+- name: Debug current OSPF configuration
+  arista.eos.eos_command:
+    commands:
+      - "show running-config | section router ospf"
+  register: ospf_config
+
+- debug:
+    var: ospf_config.stdout_lines

@@ -5,6 +5,13 @@
   become: yes
   roles: 
     - vlan
+  vars_prompt:
+  - name: ansible_user
+    prompt: "Enter the username"
+    private: no
+  - name: ansible_password
+    prompt: "Enter the password"
+    private: yes
 
 
 
