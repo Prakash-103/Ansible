@@ -1,0 +1,8 @@
+[switches]
+switch1 ansible_host=192.168.107.137
+
+[switches:vars]
+ansible_user=root
+ansible_password=Juniper
+ansible_network_os=junos
+ansible_connection=netconf

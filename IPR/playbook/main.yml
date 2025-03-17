@@ -1,5 +1,74 @@
 ---
-# main.yml
-- import_playbook: vlan_items.yml
-- import_playbook: loop_vlan.yml
-- import_playbook: arista_ospf.yml
+- name: test Firmware Upgrade Playbook
+  hosts: all
+  gather_facts: false
+  become: yes
+  connection: netconf
+  become_method: enable
+  vars:
+    - ldap_username: admin1
+    - ldap_password: pass123
+    - redundant_device_hostname: 192.168.107.137
+    - target_device_hostname: 192.168.107.137
+    - log_dir: "{{ playbook_dir }}"
+    - netconf_port: 830
+    - wait_time: 3600
+  
+  vars_prompt:
+    - name: file_path
+      prompt: "Enter the file path"
+      default: "/var/tmp"
+      private: no
+  
+  tasks:
+    # - name: Check if file path is valid
+    #   ansible.builtin.fail:
+    #     msg: "Invalid file path"
+    #   when: not file_path | is_path
+    - name: Set default path
+      ansible.builtin.set_fact:
+        default_path: "/var/tmp"
+      delegate_to: "{{ target_device_hostname}}"
+
+    - name: Find .tgz files
+      ansible.builtin.find:
+        paths: "{{ file_path }}"
+        patterns: "*.tgz"
+        recurse: yes
+      register: tgz_files
+
+    - name: Print .tgz files
+      ansible.builtin.debug:
+        msg: "{{ item.path | basename }}"
+      loop: "{{ tgz_files.files }}"
+
+    - name: Prompt user to select firmware
+      ansible.builtin.pause:
+        prompt: "Please enter the firmware file to copy from above output : "
+      register: user_input
+
+    - name: Set selected firmware file
+      set_fact:
+        selected_firmware: "{{ user_input.user_input }}"
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: selected_firmware
+
+    - name: Loop through selected firmware
+      ansible.builtin.debug:
+        msg: "Processing firmware {{ item }}"
+      loop: "{{ selected_firmware.split(',') | map('replace', ' ', '') }}"
+
+    - name: Install Junos OS package
+      juniper.device.software:
+        local_package: "{{ file_path }}/{{ item }}"
+        reboot: true
+        validate: true
+      register: response
+      loop: "{{ selected_firmware.split(',') | map('replace', ' ', '') }}"
+
+
+
+
+

@@ -1,0 +1,255 @@
+  
+---
+- name: Firmware Upgrade Playbook
+  hosts: all
+  gather_facts: false
+  become: yes
+  connection: netconf
+  become_method: enable
+  vars:
+    - ldap_username: admin1
+    - ldap_password: pass123
+    - redundant_device_hostname: 192.168.107.137
+    - target_device_hostname: 192.168.107.137
+
+    - firmware_list:
+        - "junos-install-vsrx3-x86-64-20.4R3-S1.3.tgz"
+        - "junos-install-vsrx3-x86-64-21.4R3-S2.3.tgz"
+        - "junos-install-vsrx3-x86-64-22.4R2-S1.6.tgz"
+        - "junos-install-vsrx3-x86-64-23.2R1-S1.6.tgz"
+      firmware_options: "{{ firmware_list }}"
+    
+  vars_prompt:
+  - name: ldap_username
+    prompt: "Please enter your LDAP username"
+    private: no
+
+  - name: ldap_password
+    prompt: "Please enter your LDAP password"
+    private: yes
+
+  - name: redundant_device_hostname
+    prompt: "Please enter the hostname of the redundant device"
+    private: no
+
+  - name: target_device_hostname
+    prompt: "Please enter the hostname of the target device"
+    private: no
+
+      - name: file_path
+      prompt: "Enter the file path"
+      default: "/var/tmp"
+      private: no
+
+  tasks:
+
+    - name: Check Redundant Device Status
+      ansible.builtin.command:
+        cmd: "ping -c 3 {{ redundant_device_hostname }}"
+      register: redundant_status
+      failed_when: redundant_status.rc != 0
+
+    - name: Confirm Redundant Device is Stable
+      ansible.builtin.debug:
+        msg: "Confirm redundant device is stable."
+    
+    - name: Pre-Checks on Target Device
+      junipernetworks.junos.junos_command:
+        commands:
+          - show lldp neighbors
+      register: check_redundancy
+
+    - name: Gather LLDP Neighbor Information
+      junipernetworks.junos.junos_command:
+        commands:
+          - show lldp neighbors
+      register: lldp_output
+
+    - name: Parse LLDP Neighbor Information
+      ansible.builtin.debug:
+        msg: "{{ lldp_output.stdout_lines }}"
+
+    - name: Extract LLDP Neighbor Status
+      ansible.builtin.set_fact:
+        lldp_neighbors: "{{ lldp_output.stdout_lines[0] | regex_findall('(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)') }}"
+      # Adjust the regex pattern based on the actual output format of "show lldp neighbors"
+    
+    - name: Check if LLDP Neighbors Exist
+      ansible.builtin.debug:
+        msg: "No LLDP neighbors found."
+      when: lldp_neighbors | length == 0
+
+    - name: Check LLDP Neighbor Status
+      ansible.builtin.debug:
+        msg: "LLDP neighbor {{ item[0] }} (Interface: {{ item[1] }}) is {{ item[5] }}."
+      loop: "{{ lldp_neighbors }}"
+      when: item[5] == 'Up' or item[5] == 'Active'  # Adjust conditions based on actual output
+
+    - name: Report Inactive Neighbors
+      ansible.builtin.debug:
+        msg: "LLDP neighbor {{ item[0] }} (Interface: {{ item[1] }}) is inactive (Status: {{ item[5] }})."
+      loop: "{{ lldp_neighbors }}"
+      when: item[5] == 'Down' or item[5] == 'Inactive'  # Adjust conditions based on actual output
+
+    - name: Prompt to Continue
+      ansible.builtin.pause:
+        prompt: "LLDP neighbor check completed. Do you want to continue with the playbook? (yes/no)"
+        echo: yes
+      register: continue_playbook
+
+    - name: Abort Playbook
+      ansible.builtin.meta: end_play
+      when: continue_playbook.user_input | lower == 'no'
+
+    
+    - name: Execute show configuration command
+      junipernetworks.junos.junos_command:
+        commands: 
+          - show configuration 
+        output: set
+      register: pre_config_output
+
+    - name: Save output to file
+      copy:
+        content: "{{ pre_config_output.stdout_lines[0] | join('\n') }}"
+        dest: "/home/root1/Ansible/IPR/files/backups/pre_show_config.txt"
+
+    - name: Pre-Checks on Target Device
+      junipernetworks.junos.junos_command:
+        commands:
+          - show ethernet-switching table
+          - show version
+          - show interface terse
+          - show interface descriptions
+          - show lldp neighbors
+          - show virtual-chassis
+        output: text
+      register: pre_check_output
+
+    - name: Save pre-check output to local file
+      copy:
+        content: "{{ pre_check_output.stdout | join('\n') }}"
+        dest: /home/root1/Ansible/IPR/files/backups/precheck.txt
+
+    - name: Confirm Pre-Check Results
+      ansible.builtin.debug:
+        msg: "Confirm pre-check results. "
+
+    - name: Set default path
+      ansible.builtin.set_fact:
+        default_path: "/var/tmp"
+      delegate_to: "{{ target_device_hostname}}"
+      when:  
+
+    - name: Find .tgz files
+      ansible.builtin.find:
+        paths: "{{ file_path }}"
+        patterns: "*.tgz"
+        recurse: yes
+      register: tgz_files
+
+    - name: Print .tgz files
+      ansible.builtin.debug:
+        msg: "{{ item.path | basename }}"
+      loop: "{{ tgz_files.files }}"
+
+    - name: Prompt user to select firmware
+      ansible.builtin.pause:
+        prompt: "Please enter the firmware file to copy from above output : "
+      register: user_input
+
+    - name: Set selected firmware file
+      set_fact:
+        selected_firmware: "{{ user_input.user_input }}"
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: selected_firmware
+
+    - name: Loop through selected firmware
+      ansible.builtin.debug:
+        msg: "Processing firmware {{ item }}"
+      loop: "{{ selected_firmware.split(',') | map('replace', ' ', '') }}"
+
+    - name: Copy selected firmware file
+      ansible.builtin.copy:
+        src: "{{ file_path }}/{{ item }}"
+        dest: "/var/tmp/{{ selected_firmware }}"
+        remote_src: yes
+      register: copy_result
+      loop: "{{ selected_firmware.split(',') | map('replace', ' ', '') }}"
+
+    - name: Verify checksum
+      ansible.builtin.debug:
+        msg: "Checksum verification for {{ item }}: {{ source_checksum.results[loop.index0].checksum }} (source) == {{ destination_checksum.results[loop.index0].checksum }} (destination)"
+      loop: "{{ selected_firmware.split(',') | map('replace', ' ', '') }}"
+      loop_control:
+        extended: yes
+      failed_when: source_checksum.results[loop.index0].checksum != destination_checksum.results[loop.index0].checksum
+
+
+    - name: Upgrade Process with selected firmware
+      ansible.builtin.shell:
+        cmd: "request system software add /var/tmp/{{ selected_firmware }} no-validate"
+
+    - name: Reboot the Target Device
+      ansible.builtin.command:
+        cmd: "request system reboot"
+
+    - name: Wait for Device to Come Online
+      ansible.builtin.wait_for:
+        host: "{{ target_device_hostname }}"
+        port: 22
+        delay: 30
+        timeout: 600
+    
+    - name: Execute show configuration command
+      junipernetworks.junos.junos_command:
+        commands: 
+          - show configuration 
+        output: set
+      register: post_config_output
+
+    - name: Restore Configuration Before Post-Checks
+      ansible.builtin.shell:
+        cmd: "load override /var/tmp/config-backup.conf"
+      register: config_restore_output
+      when: pre_config_output != post_config_output
+
+    - name: Post-Checks on Target Device
+      junipernetworks.junos.junos_command:
+        commands:
+          - show ethernet-switching table
+          - show version
+          - show interface terse
+          - show interface descriptions
+          - show lldp neighbors
+          - show virtual-chassis
+        output: text
+      register: post_check_output
+
+    - name: Save post-check output to local file
+      ansible.builtin.copy:
+        content: "{{ post_check_output.stdout }}"
+        dest: /path/to/local/destination/post_check_output.txt
+        mode: '0644'
+
+    - name: Compare Pre-Checks and Post-Checks
+      ansible.builtin.command:
+        cmd: "diff /home/root1/Ansible/IPR/files/backups/precheck.txt /home/root1/Ansible/IPR/files/backups/postcheck.txt"
+      ignore_errors: yes
+      register: comparison_result
+    
+    - name:
+      debug:
+        var: comparison_result.stdout
+    
+    - name: Save post-check output to local file
+      ansible.builtin.copy:
+        content: "{{ comparison_result.stdout }}"
+        dest: /home/root1/Ansible/IPR/files/backups/final_diff.txt
+        mode: '0644'
+    
+    - name:
+      debug:
+        msg: task completed
