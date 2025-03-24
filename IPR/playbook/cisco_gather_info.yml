@@ -1,0 +1,19 @@
+- name: Collect Interface Details and Save to a Single File
+  hosts: cisco9300
+  gather_facts: no
+  tasks:
+    
+    - name: Run Show Command
+      ios_command:
+        commands: sh ip interface brief
+      register: interface_output
+
+    - name: Save Output Per Device
+      copy:
+        content: "{{ ansible_host }}#\n{{ interface_output.stdout | default('No output received') | join('\n') }}\n"
+        dest: "/home/root1/Ansible/IPR/files/device_outputs/{{ ansible_host }}.txt"
+
+    - name: Merge all device outputs
+      ansible.builtin.assemble:
+        src: "/home/root1/Ansible/IPR/files/device_outputs/"
+        dest: "/home/root1/Ansible/IPR/files/all_devices_output.txt"

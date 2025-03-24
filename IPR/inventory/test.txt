@@ -1,6 +1,16 @@
 [switches]
 switch1 ansible_host=192.168.107.137
 
+[cisco9300]
+developer ansible_host=192.168.107.30
+
+[cisco9300:vars]
+ansible_user=admin
+ansible_password=pass@123
+ansible_network_os=ios
+ansible_connection=network_cli
+
+
 [switches:vars]
 ansible_user=root
 ansible_password=Juniper
