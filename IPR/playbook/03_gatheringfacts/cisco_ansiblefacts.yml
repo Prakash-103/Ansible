@@ -1,0 +1,38 @@
+---
+- name: Collect Interface Details and Save to a Single File
+  hosts: cisco9300
+  gather_facts: true
+
+  tasks:
+    - name: gathering all facts ansiblefacts
+      ansible.builtin.debug:
+         msg: "{{ ansible_facts }}"
+  
+    - name: gathering all facts using var
+      ansible.builtin.debug:
+         var:  ansible_facts 
+
+    - name: gathering ansible facts through passing the list of varialbles
+      ansible.builtin.debug:
+        msg: 
+        -  "{{ ansible_facts.net_model }}"
+        - "{{ ansible_facts.net_system }}"
+        -  "{{ ansible_facts.net_python_version }}"
+        -  "{{ ansible_facts.net_version }}"
+
+
+    - name: gathering ansible facts using literal block scalar '|' includes the \n
+      ansible.builtin.debug:
+        msg: | 
+         net_model is :{{ ansible_facts.net_model }}
+         net_system is :{{ ansible_facts.net_system }}
+         net_python_version is :{{ ansible_facts.net_python_version }}
+         net_version is :{{ ansible_facts.net_version }}
+
+    - name: gathering ansible facts using folded block scalar '<' replace the \n with space 
+      ansible.builtin.debug:
+        msg: < 
+         net_model is :{{ ansible_facts.net_model }}
+         net_system is :{{ ansible_facts.net_system }}
+         net_python_version is :{{ ansible_facts.net_python_version }}
+         net_version is :{{ ansible_facts.net_version }}
