@@ -1,0 +1,37 @@
+---
+- name: Collect Interface Details and Save to a Single File
+  hosts: cisco9300
+  gather_facts: no
+
+  tasks:
+    - name: sh commands
+      cisco.ios.ios_command:
+        commands:
+          - sh version
+          - sh ip int brief
+        match: any
+        wait_for:
+          - result[0] contains admin1
+          - result[1] contains 192.168.107.30
+
+      register: sh_output
+
+    # - name: print the output
+    #   debug:
+    #       msg: "{{sh_output}}"
+
+    # - name: print the output in the form of text un organizesd format
+    #   debug:
+    #       msg: "{{sh_output.stdout}}"
+
+    # - name: print the output in the line by line
+    #   debug:
+    #       msg: "{{sh_output.stdout_lines}}"
+
+    - name: print the output of sh version
+      debug:
+          msg: "{{sh_output.stdout_lines[0]}}"
+
+    - name: print the output of sh interface brief
+      debug:
+          msg: "{{sh_output.stdout_lines[1]}}"
