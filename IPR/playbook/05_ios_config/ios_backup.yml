@@ -1,0 +1,25 @@
+---
+- name: parsing the configurations
+  hosts: cisco9300
+  gather_facts: no
+  tasks:
+
+  - name: configure the device it checks for the idempotency itself
+    cisco.ios.ios_config:
+      lines:
+        - interface vlan 20
+        - ip address 192.168.20.10 255.255.255.0
+        - no shutdown
+      save_when: always
+      backup: true
+      backup_options:
+        dir_path: /home/root1/Ansible/IPR/playbook/05_ios_config/backup
+        filename: "{{ inventory_hostname }}_{{ ansible_ssh_host }}_{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}_config.txt"
+    register: conf_vlan
+  
+  - name: print the output
+    ansible.builtin.debug:
+        msg: "{{conf_vlan}}"
+
+
+      
