@@ -1,0 +1,33 @@
+---
+- name: parsing the configurations
+  hosts: cisco9300
+  gather_facts: no
+  tasks:
+
+  - name: configure the device it checks for the idempotency itself
+    cisco.ios.ios_config:
+      lines:
+        - ip domain name test.com
+      diff_against: intended
+      intended_config: "{{ lookup('file','/home/root1/Ansible/IPR/playbook/05_ios_config/backup/developer_192.168.107.30_2025-03-25_12-52-03_config.txt')}}"
+      backup: false
+    register: conf_vlan
+  
+  - name: print the output
+    ansible.builtin.debug:
+        msg: "{{conf_vlan}}"
+
+  - name: configure the device it checks for the idempotency itself
+    cisco.ios.ios_config:
+      lines:
+        - ip domain name test.com
+      diff_against: startup  # or running
+      backup: false
+    register: conf_vlan
+  
+  - name: print the output
+    ansible.builtin.debug:
+        msg: "{{conf_vlan}}"
+
+
+      
