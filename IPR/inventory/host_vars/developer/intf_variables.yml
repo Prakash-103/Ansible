@@ -1,15 +1,15 @@
 interface_list:
   - name: GigabitEthernet0/2
-    description: gi_0/2
+    description: gi_0/2_hostvar
     ip: 192.168.10.23
     mask: 255.255.255.0
   
   - name: GigabitEthernet0/3
-    description: gi_0/3
+    description: gi_0/3_hostvar
     ip: 192.168.11.28
     mask: 255.255.255.0
 
   - name: GigabitEthernet1/1
-    description: gi_1/1
+    description: gi_1/1_hostvar
     ip: 192.168.12.22
     mask: 255.255.255.0

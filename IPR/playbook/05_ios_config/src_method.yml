@@ -1,0 +1,23 @@
+---
+- name: parsing the configurations
+  hosts: cisco9300
+  gather_facts: no
+  tasks:  
+    # - name: Configure the device using src file
+    #   cisco.ios.ios_config:
+    #     src: "/home/root1/Ansible/IPR/playbook/05_ios_config/templates/config_file.txt"
+    #   register: config_output
+
+    - name: Configure the device using jinja template
+      cisco.ios.ios_config:
+        src: "/home/root1/Ansible/IPR/playbook/05_ios_config/templates/config.j2"
+        save_when: changed
+      with_items: "{{ interface_list }}"
+
+      # changed only save is there any changes in the task 
+      # modified check the startup config if the running config not updated it updates the entire changes includes cli changes
+      register: config_output
+
+    - name: print the output
+      ansible.builtin.debug:
+          msg: "{{config_output}}"
