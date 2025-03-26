@@ -1,0 +1,52 @@
+---
+- name: parsing the configurations
+  hosts: cisco9300
+  gather_facts: no
+  tasks:
+
+  # - name: configure the device it checks for the idempotency itself
+  #   cisco.ios.ios_config:
+      # lines:
+      #   - no switchport
+      #   - description From_ansible
+      #   - ip address 10.0.1.10 255.255.255.0
+      # parents: interface GigabitEthernet0/3
+            
+  #   register: conf_vlan
+
+  # - name: configure the device using the literal block 
+  #   cisco.ios.ios_config:
+  #     lines: |
+  #       interface GigabitEthernet0/3
+  #         no switchport
+  #         description From_ansible
+  #         ip address 10.0.1.10 255.255.255.0
+
+            
+  #   register: conf_vlan
+
+  # - name: configure the device using the literal block 
+  #   cisco.ios.ios_config:
+  #     lines: |
+  #       interface {{ item }}
+  #         no switchport
+  #         description From_ansible
+  #   with_items:
+  #     - GigabitEthernet0/2
+  #     - GigabitEthernet0/3
+  #     - GigabitEthernet0/4
+
+    - name: Configure the device
+      cisco.ios.ios_config:
+        lines:
+          - no switchport
+          - description {{ item.description }}
+          - ip address {{ item.ip }} {{ item.mask }}
+          - no shutdown
+        parents: interface {{ item.name }}
+      loop: "{{ interface_list }}"
+      register: conf_ip
+
+    - name: print the output
+      ansible.builtin.debug:
+          msg: "{{conf_ip}}"
